@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        <!-- 给模板的属性 增加一个收集器 dep -->
+        <!-- 页面渲染的时候 将渲染逻辑封装到watcher中 vm._update(vm._render())-->
+        <!-- 让dep记住这个watcher，属性变化后可以找到对应dep中的watcher进行重新渲染 -->
+       <!-- 观察者模式 -->
+        <div id="app" style="width:120px; height:100px">
+            <div style="color: red">
+                {{name}}
+            </div>
+            <!-- <span>{{age}}</span>
+            <span>{{fullname}}</span> -->
+            <!-- 计算属性 依赖的值发生变化才会重新执行用户的方法 计算属性中维护一个dirty属性，默认计算属性不会立刻执行
+            计算属性就是一个defineProperty
+            计算属性也是一个watcher。默认渲染会创建一个渲染watcher
+            -->
+            <!-- <span>{{fullname}}</span>
+            <span>{{fullname}}</span> -->
+        </div>
+        <script src="vue.js"></script>
+        <!-- <script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script> -->
+        <script>
+            // 响应式数据： 能够监听到数据变化
+            // 数据的取值和更改至我们要监控到
+            const vm = new Vue({
+                el:'#app',
+                data: {
+                    name: 'lisa',
+                    age: 20,
+                    // firstname: '谢',
+                    // lastname: '丽霞'
+                    // heihei: {
+                    //     name: 'xx'
+                    // }
+                },
+                // computed: {
+                //     // fullname() {
+                //     //     return this.firstname + this.lastname
+                //     // }
+                //     fullname: {
+                //         get() {
+                //             console.log('run')
+                //             return this.firstname + this.lastname
+                //         },
+                //         set(newval) {
+                //             console.log(newval)
+                //         }
+                //     }
+                // }
+            })
+            vm.$mount('#app')
+            // setTimeout(()=> {
+            //     vm.firstname = '123'
+            // }, 1000)
+
+        </script>
+    </body>   
+</html>

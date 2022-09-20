@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        <!-- 给模板的属性 增加一个收集器 dep -->
+        <!-- 页面渲染的时候 将渲染逻辑封装到watcher中 vm._update(vm._render())-->
+        <!-- 让dep记住这个watcher，属性变化后可以找到对应dep中的watcher进行重新渲染 -->
+       <!-- 观察者模式 -->
+        <div id="app" style="width:120px; height:100px">
+            <div style="color: red">
+                {{name}}
+            </div>
+            <span>{{age}}</span>
+        </div>
+        <script src="vue.js"></script>
+        <!-- <script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script> -->
+        <script>
+            // 响应式数据： 能够监听到数据变化
+            // 数据的取值和更改至我们要监控到
+            Vue.mixin({
+                created() {
+                    console.log('created')
+                },
+                b: 2
+            })
+            console.log(Vue.options) // 发布--》订阅
+            const vm = new Vue({
+                data: {
+                    name: 'lisa',
+                    age: 20,
+                    // heihei: {
+                    //     name: 'xx'
+                    // }
+                },
+                created() {
+                    console.log('create')
+                }
+            })
+         
+
+        </script>
+    </body>   
+</html>

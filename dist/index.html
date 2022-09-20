@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        <!-- 给模板的属性 增加一个收集器 dep -->
+        <!-- 页面渲染的时候 将渲染逻辑封装到watcher中 vm._update(vm._render())-->
+        <!-- 让dep记住这个watcher，属性变化后可以找到对应dep中的watcher进行重新渲染 -->
+       <!-- 观察者模式 -->
+        <div id="app" style="width:120px; height:100px">
+            <div style="color: red">
+                {{name}}
+            </div>
+            <span>{{age}}</span>
+        </div>
+        <script src="vue.js"></script>
+        <script>
+            // 响应式数据： 能够监听到数据变化
+            // 数据的取值和更改至我们要监控到
+            const vm = new Vue({
+                data: {
+                    name: 'lisa',
+                    age: 20,
+                    // heihei: {
+                    //     name: 'xx'
+                    // }
+                },
+                el:'#app', // 将数据解析到el元素上
+                // render() {
+                //     return createElement('div', {})
+                // }
+            })
+            vm.$mount('#app')
+            // nextTick不是创建了一个异步任务，而是将任务维护到任务队列中
+           
+            vm.name = 'jw'
+            // vm.$nextTick(()=>{
+            //     console.log(app.innerHTML)
+            // })
+           // console.log(app.innerHTML)
+            
+            // setTimeout(()=> {
+            //     vm.name='shelly'
+            //     vm.name = 'lisax'
+            //     vm.age = 18
+            // }, 3000)
+            // vm.name = 'shelly'
+            //  console.log(vm.name)
+            // 1、模板引擎，每次拿到模板进行替换，性能差，需要正则匹配替换
+            // 2、采用虚拟dom，数据变化后比较虚拟dom的差异，最后更新需要更新的地方
+            // 3、核心就是需要将 模板变成我们的js语法，通过js语法生成虚拟dom
+
+            // 从一个东西 变成 另一个东西 语法之间的转化， es6->es5
+            // 需要将templete模板转为render函数
+
+
+
+            // 1)将数据处理成响应式 
+            // 2)模板编译
+            // 3)调用render方法，生成虚拟dom
+            // 4）虚拟dom渲染成真实dom
+
+
+
+            // 1、观察者模式实现依赖手机
+            // 2、异步更新
+            // 3、minxin的实现原理
+        </script>
+    </body>   
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        <div id="app" style="width:120px; height:100px">
+            <div style="color: red">
+                {{name}}
+            </div>
+            <span>{{age}}</span>
+            <span>{{fullname}}</span>
+        </div>
+        <script src="vue.js"></script>
+        <script>
+            const vm = new Vue({
+                data: {
+                    name: 'lisa',
+                    age: 20,
+                    firstname: 'xx',
+                    lastname: 'lii'
+                },
+                el:'#app', // 将数据解析到el元素上
+                 computed: {
+                    fullname() {
+                        console.log('run')
+                        return this.firstname + this.lastname
+                    }
+                    // fullname: {
+                    //     get() {
+                    //         console.log('run')
+                    //         return this.firstname + this.lastname
+                    //     },
+                    //     set(newval) {
+                    //         console.log(newval)
+                    //     }
+                    // }
+                }
+            })
+            vm.$mount('#app')
+        </script>
+    </body>   
+</html>
