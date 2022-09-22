@@ -8,7 +8,7 @@
             <div style="color: red">
                 {{name}}
             </div>
-            <span>{{fullname}}</span>
+            <span>{{firstname}}</span>
         </div>
         <script src="vue.js"></script>
         <script>
@@ -18,27 +18,29 @@
                     firstname: 'xx',
                     lastname: 'lii'
                 },
-                el:'#app', // 将数据解析到el元素上
-                 computed: {
-                    fullname() {
-                        console.log('run')
-                        return this.firstname + this.lastname
+                // 直接写一个函数
+                // 数组写法
+                watch: {
+                    firstname(newVal,oldVal) {
+                        console.log(newVal, oldVal)
                     }
-                    // fullname: {
-                    //     get() {
-                    //         console.log('run')
-                    //         return this.firstname + this.lastname
-                    //     },
-                    //     set(newval) {
-                    //         console.log(newval)
-                    //     }
-                    // }
-                }
+                    
+                },
+                el:'#app', // 将数据解析到el元素上
+            
             })
             vm.$mount('#app')
             // setTimeout(()=> {
             //     vm.firstname = 'xxx'
             // },1000)
+
+            // 底层写法，上面的watch会转化为下面的方法执行
+            vm.$watch(()=>vm.firstname, (newVal, oldVal) => {
+                console.log(newVal, oldVal, 'li')
+            })
+            setTimeout(()=> {
+                vm.firstname = 'shelly'
+            }, 1000)
         </script>
     </body>   
 </html>

@@ -40,7 +40,7 @@
         if (strats[key]) {
           options[key] = strats[key](parent[key], child[key]);
         } else {
-          options[key] = child[key] || parent[key]; // 有限采用儿子，再采用父亲
+          options[key] = child[key] || parent[key]; // 优先采用儿子，再采用父亲
         }
       }
 
@@ -456,24 +456,33 @@
 
     var Watcher = /*#__PURE__*/function () {
       // 不同组件有不同的watcher new watcher，实现了局部渲染
-      function Watcher(vm, fn, options) {
+      function Watcher(vm, exprOrFn, options, cb) {
         _classCallCheck(this, Watcher);
 
         this.id = id++;
         this.renderWatcher = options; // 是一个渲染watcher
 
-        this.deps = []; // 后续实现计算属性，和一些清理工作需要用到
+        if (typeof exprOrFn === 'string') {
+          this.getter = function () {
+            return vm[exprOrFn]; // vm.firstname
+          };
+        } else {
+          this.getter = exprOrFn;
+        }
 
-        this.getter = fn; // 调用这个函数可以发生取值操作
+        this.deps = []; // 后续实现计算属性，和一些清理工作需要用到
+        // this.getter = fn; // 调用这个函数可以发生取值操作
 
         this.depsId = new Set();
+        this.cb = cb;
         this.lazy = options.lazy;
         this.dirty = this.lazy; // 缓存值
-
-        this.lazy ? undefined : this.get(); // 有lazy不执行get
         // this.get()
 
         this.vm = vm;
+        this.user = options.user; // 标识是否是用户自己的
+
+        this.value = this.lazy ? undefined : this.get(); // 有lazy不执行get
       }
 
       _createClass(Watcher, [{
@@ -506,16 +515,36 @@
           return value;
         }
       }, {
+        key: "depend",
+        value: function depend() {
+          var i = this.deps.length;
+
+          while (i--) {
+            this.deps[i].depend(); // 让计算属性watcher也收集渲染watcher
+          }
+        }
+      }, {
         key: "update",
         value: function update() {
           debugger;
-          queueWatcher(this); // 把当前的watcher暂存起来
-          // this.get(); // 重新渲染
+
+          if (this.lazy) {
+            // 如果是计算属性 依赖的值变化了，就标识计算属性是脏值了
+            this.dirty = true;
+          } else {
+            queueWatcher(this); // 把当前的watcher暂存起来
+            // this.get(); // 重新渲染
+          }
         }
       }, {
         key: "run",
         value: function run() {
-          this.get();
+          var oldValue = this.value;
+          var newValue = this.get(); // 渲染的时候用的是最新的vm来渲染的
+
+          if (this.user) {
+            this.cb.call(this.vm, newValue, oldValue);
+          }
         }
       }]);
 
@@ -827,6 +856,37 @@
       if (opts.computed) {
         initComputed(vm);
       }
+
+      if (opts.watch) {
+        initWatch(vm);
+      }
+    }
+
+    function initWatch(vm) {
+      var watch = vm.$options.watch;
+      console.log('watch', watch);
+
+      for (var key in watch) {
+        // 字符串 数组 函数
+        var handler = watch[key];
+
+        if (Array.isArray(handler)) {
+          for (var i = 0; i < handler.length; i++) {
+            createWatcher(vm, key, handler[i]);
+          }
+        } else {
+          createWatcher(vm, key, handler);
+        }
+      }
+    }
+
+    function createWatcher(vm, key, handler) {
+      // 字符串 函数 对象
+      if (typeof handler === 'string') {
+        handler = vm[handler];
+      }
+
+      return vm.$watch(key, handler);
     }
 
     function proxy(vm, target, key) {
@@ -892,6 +952,11 @@
         if (watcher.dirty) {
           // 如果是脏的，就去执行用户传入的函数
           watcher.evaluate(); // 求值后dirty变为false
+        }
+
+        if (Dep.target) {
+          // 计算属性出栈后，还要渲染watcher，应该让计算属性watcher里面的属性依赖也去收集上一层watcher
+          watcher.depend();
         }
 
         return watcher.value; // 返回watcher上的
@@ -977,7 +1042,15 @@
     Vue.prototype.$nextTick = nextTick;
     initMixin(Vue);
     initLifeCycle(Vue);
-    initGlobalApi(Vue);
+    initGlobalApi(Vue); // 最终调用的方法
+
+    Vue.prototype.$watch = function (exprOrFn, cb) {
+      console.log(exprOrFn, cb); // firsetname的值变化了，直接执行cb函数
+
+      new Watcher(this, exprOrFn, {
+        user: true
+      }, cb);
+    };
 
     return Vue;
 

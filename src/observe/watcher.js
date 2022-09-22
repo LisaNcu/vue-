@@ -6,17 +6,30 @@ let id = 0;
 // 2)调用render 会取值到get上
 // 每个属性都有一个dep（属性是被观察者）， watcher就是观察者（属性变化了会通知观察者来更新）--》观察者模式
 class Watcher { // 不同组件有不同的watcher new watcher，实现了局部渲染
-    constructor(vm, fn, options) {
+    constructor(vm, exprOrFn, options, cb) {
         this.id = id++;
         this.renderWatcher = options; // 是一个渲染watcher
+
+        if (typeof exprOrFn === 'string') {
+            this.getter = function () {
+                return vm[exprOrFn] // vm.firstname
+            }
+        } else {
+            this.getter = exprOrFn
+        }
+
         this.deps = []; // 后续实现计算属性，和一些清理工作需要用到
-        this.getter = fn; // 调用这个函数可以发生取值操作
+        // this.getter = fn; // 调用这个函数可以发生取值操作
         this.depsId = new Set();
+        this.cb = cb;
         this.lazy = options.lazy;
         this.dirty = this.lazy; // 缓存值
-        this.lazy ? undefined : this.get(); // 有lazy不执行get
+       
         // this.get()
         this.vm = vm;
+        this.user = options.user // 标识是否是用户自己的
+        
+        this.value =  this.lazy ? undefined : this.get(); // 有lazy不执行get
     }
     addDep(dep) { // 一个组件对应着多个属性 重复的属性也不用记录
         let id = dep.id;
@@ -38,20 +51,38 @@ class Watcher { // 不同组件有不同的watcher new watcher，实现了局部
         popTarget()
         return value;
     }
-    update() {debugger
-        queueWatcher(this); // 把当前的watcher暂存起来
-        // this.get(); // 重新渲染
+    depend() {
+        let i = this.deps.length;
+        while (i--) {
+            this.deps[i].depend() // 让计算属性watcher也收集渲染watcher
+        }
+    }
+    update() {
+        debugger
+        if (this.lazy) {
+            // 如果是计算属性 依赖的值变化了，就标识计算属性是脏值了
+            this.dirty = true
+        } else {
+            queueWatcher(this); // 把当前的watcher暂存起来
+            // this.get(); // 重新渲染
+        }
     }
 
     run() {
-        this.get();
+        let oldValue = this.value;
+        let newValue = this.get(); // 渲染的时候用的是最新的vm来渲染的
+
+        if (this.user) {
+            this.cb.call(this.vm, newValue, oldValue)
+        }
     }
 }
 let queue = [];
 let has = {};
 let pending = false; // 防抖
 
-function flushSchedulerQueue() {debugger
+function flushSchedulerQueue() {
+    debugger
     let flushQueue = queue.slice(0);
     queue = [];
     has = {};
@@ -77,11 +108,12 @@ function queueWatcher(watcher) {
 
 let callbacks = [];
 let waiting = false;
-function flushCallbacks() {debugger
+function flushCallbacks() {
+    debugger
     waiting = false;
     let cbs = callbacks.slice(0);
     callbacks = [];
-    cbs.forEach(cb=>cb()); // 按照顺序依次执行
+    cbs.forEach(cb => cb()); // 按照顺序依次执行
 }
 // 没有直接使用api，而是采用优雅降级的方式
 // 内部先采用promise（ie不兼容）--> MutationObserver--> ie专享的setImmediate setTimeout
@@ -91,7 +123,7 @@ if (Promise) {
     timerFunc = () => {
         Promise.resolve().then(flushCallbacks)
     }
-} 
+}
 // else if (MutationObserver) {
 //     let observe = new MutationObserver(flushCallbacks)
 //     let textnode = document.createTextNode(1);
@@ -110,12 +142,13 @@ if (Promise) {
 //         setTimeout(flushCallbacks)
 //     }
 // }
-export function nextTick(cb) {debugger
+export function nextTick(cb) {
+    debugger
     callbacks.push(cb); // 维护nextTick中的callback方法
     if (!waiting) {
         //setTimeout(()=>{
-           //  flushCallbacks(); // 最后一起刷新
-           timerFunc()
+        //  flushCallbacks(); // 最后一起刷新
+        timerFunc()
         //},0)
         waiting = true;
     }

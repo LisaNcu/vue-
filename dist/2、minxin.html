@@ -21,11 +21,11 @@
             // 数据的取值和更改至我们要监控到
             Vue.mixin({
                 created() {
-                    console.log('created')
+                   // console.log('created')
                 },
                 b: 2
             })
-            console.log(Vue.options) // 发布--》订阅
+            //console.log(Vue.options) // 发布--》订阅
             const vm = new Vue({
                 data: {
                     name: 'lisa',
@@ -35,7 +35,7 @@
                     // }
                 },
                 created() {
-                    console.log('create')
+                    //console.log('create')
                 }
             })
          
