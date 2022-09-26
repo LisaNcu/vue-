@@ -58,7 +58,7 @@ class Watcher { // 不同组件有不同的watcher new watcher，实现了局部
         }
     }
     update() {
-        debugger
+        //debugger
         if (this.lazy) {
             // 如果是计算属性 依赖的值变化了，就标识计算属性是脏值了
             this.dirty = true
@@ -82,7 +82,7 @@ let has = {};
 let pending = false; // 防抖
 
 function flushSchedulerQueue() {
-    debugger
+    //debugger
     let flushQueue = queue.slice(0);
     queue = [];
     has = {};
@@ -109,7 +109,7 @@ function queueWatcher(watcher) {
 let callbacks = [];
 let waiting = false;
 function flushCallbacks() {
-    debugger
+    //debugger
     waiting = false;
     let cbs = callbacks.slice(0);
     callbacks = [];
@@ -143,7 +143,7 @@ if (Promise) {
 //     }
 // }
 export function nextTick(cb) {
-    debugger
+    //debugger
     callbacks.push(cb); // 维护nextTick中的callback方法
     if (!waiting) {
         //setTimeout(()=>{

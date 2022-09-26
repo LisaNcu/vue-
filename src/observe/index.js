@@ -12,7 +12,7 @@ class Observe {
     }
 }
 export function defineReactive(target, key ,value) { //闭包 属性劫持
-    debugger
+   // debugger
    observe(value) // 递归 劫持属性
    let dep = new Dep(); // 每一个属性都有一个dep
     Object.defineProperty(target, key, {

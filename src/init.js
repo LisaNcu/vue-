@@ -10,7 +10,7 @@ export function initMixin(Vue) {
        // vm.$options = options //用户选项挂在到实例上
        // 定义的全局指令过滤器...都会挂载到实例上
        vm.$options = mergeOptions(this.constructor.options,options)
-       console.log('vm.$options',vm.$options)
+       //console.log('vm.$options',vm.$options)
        // 初始化状态 watch created
        //initState(vm);
        
@@ -46,7 +46,7 @@ export function initMixin(Vue) {
 
         mountComponent(vm, el); // 组件的挂载
 
-        console.log('ops.render', ops.render); // 最终可以获取render方法
+        //console.log('ops.render', ops.render); // 最终可以获取render方法
 
 
 

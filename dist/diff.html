@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        <div id="app" style="width:120px; height:100px">
+            <div style="color: red">
+                {{name}}
+            </div>
+            <span>{{age}}</span>
+        </div>
+        <script src="vue.js"></script>
+        <script>
+            const vm = new Vue({
+                data: {
+                    name: 'lisa',
+                    age: 20,
+                },
+                el:'#app', // 将数据解析到el元素上
+            })
+            vm.$mount('#app')
+            // 第一次渲染的时候会产生虚拟节点，第二次更新也会diaoyongrender方法产生新的虚拟节点。
+            // 比对出需要更新的内容更新
+        </script>
+    </body>   
+</html>

@@ -22,7 +22,7 @@
                 // 数组写法
                 watch: {
                     firstname(newVal,oldVal) {
-                        console.log(newVal, oldVal)
+                       // console.log(newVal, oldVal)
                     }
                     
                 },
@@ -36,7 +36,7 @@
 
             // 底层写法，上面的watch会转化为下面的方法执行
             vm.$watch(()=>vm.firstname, (newVal, oldVal) => {
-                console.log(newVal, oldVal, 'li')
+              //  console.log(newVal, oldVal, 'li')
             })
             setTimeout(()=> {
                 vm.firstname = 'shelly'
